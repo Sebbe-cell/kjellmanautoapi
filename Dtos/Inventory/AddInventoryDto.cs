@@ -9,6 +9,7 @@ namespace kjellmanautoapi.Dtos.Inventory
         public int Milage { get; set; } = 10000;
         public int Price { get; set; } = 10000;
         public string ImageName { get; set; } = "";
+        public string Description { get; set; } = "";
         public IFormFile? ImageFile { get; set; }
     }
 }

@@ -9,5 +9,6 @@ namespace kjellmanautoapi.Dtos.Inventory
         public string PlateNumber { get; set; } = "XXX111";
         public int Milage { get; set; } = 10000;
         public int Price { get; set; } = 10000;
+        public string Description { get; set; } = "";
     }
 }

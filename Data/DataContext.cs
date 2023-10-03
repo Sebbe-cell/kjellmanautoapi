@@ -4,9 +4,10 @@ namespace kjellmanautoapi.Data
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
-            
+
         }
 
         public DbSet<Inventory> Inventories => Set<Inventory>();
+        public DbSet<Users> Users => Set<Users>();
     }
 }

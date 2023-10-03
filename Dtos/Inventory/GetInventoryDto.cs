@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace kjellmanautoapi.Dtos.Inventory
 {
     public class GetInventoryDto
@@ -9,5 +11,12 @@ namespace kjellmanautoapi.Dtos.Inventory
         public string PlateNumber { get; set; } = "XXX111";
         public int Milage { get; set; } = 10000;
         public int Price { get; set; } = 10000;
+        public string Description { get; set; } = "";
+
+        [NotMapped]
+        public IFormFile? ImageFile { get; set; }
+
+        [NotMapped]
+        public string ImageSrc { get; set; } = "";
     }
 }

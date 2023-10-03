@@ -82,3 +82,8 @@ C:\Users\Sebastian\Desktop\Source\kjellmanautoapi\bin\Debug\net6.0\runtimes\win\
 C:\Users\Sebastian\Desktop\Source\kjellmanautoapi\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Security.Cryptography.ProtectedData.dll
 C:\Users\Sebastian\Desktop\Source\kjellmanautoapi\bin\Debug\net6.0\runtimes\browser\lib\net6.0\System.Text.Encodings.Web.dll
 C:\Users\Sebastian\Desktop\Source\kjellmanautoapi\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
+C:\Users\Sebastian\Desktop\Source\kjellmanautoapi\bin\Debug\net6.0\BCrypt.Net-Next.dll
+C:\Users\Sebastian\Desktop\Source\kjellmanautoapi\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\Sebastian\Desktop\Source\kjellmanautoapi\bin\Debug\net6.0\Scrutor.dll
+C:\Users\Sebastian\Desktop\Source\kjellmanautoapi\bin\Debug\net6.0\Swashbuckle.AspNetCore.Filters.dll
+C:\Users\Sebastian\Desktop\Source\kjellmanautoapi\bin\Debug\net6.0\Swashbuckle.AspNetCore.Filters.Abstractions.dll

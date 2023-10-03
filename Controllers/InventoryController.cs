@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace kjellmanautoapi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class InventoryController : ControllerBase
     {
         private readonly IInventoryService _inventoryService;
@@ -15,21 +17,26 @@ namespace kjellmanautoapi.Controllers
             _hostEnvironment = hostEnvironment;
         }
 
-        [HttpGet("GetAll")]
+        [HttpGet("GetAll"), AllowAnonymous]
         public async Task<ActionResult<ServiceResponse<List<GetInventoryDto>>>> Get()
         {
             return Ok(await _inventoryService.GetAllInventories());
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}"), AllowAnonymous]
         public async Task<ActionResult<ServiceResponse<GetInventoryDto>>> GetSingle(int id)
         {
             return Ok(await _inventoryService.GetInventoryById(id));
         }
 
         [HttpPost]
-        public async Task<ActionResult<ServiceResponse<List<GetInventoryDto>>>> AddInventory([FromForm]AddInventoryDto newInventory)
+        public async Task<ActionResult<ServiceResponse<List<GetInventoryDto>>>> AddInventory([FromForm] AddInventoryDto newInventory)
         {
+            if (newInventory == null || newInventory.ImageFile == null)
+            {
+                return BadRequest("Invalid input"); // Return a 400 Bad Request with an error message for invalid input
+            }
+
             newInventory.ImageName = await SaveImage(newInventory.ImageFile);
             return Ok(await _inventoryService.AddInventory(newInventory));
         }
@@ -38,7 +45,7 @@ namespace kjellmanautoapi.Controllers
         public async Task<string> SaveImage(IFormFile imageFile)
         {
             string imageName = new string(Path.GetFileNameWithoutExtension(imageFile.FileName).Take(10).ToArray()).Replace(' ', '-');
-            imageName = imageName+DateTime.Now.ToString("yymmssfff")+ Path.GetExtension(imageFile.FileName);
+            imageName = imageName + DateTime.Now.ToString("yymmssfff") + Path.GetExtension(imageFile.FileName);
             var imagePath = Path.Combine(_hostEnvironment.ContentRootPath, "Images", imageName);
 
             using (var fileStream = new FileStream(imagePath, FileMode.Create))

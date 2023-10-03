@@ -11,9 +11,13 @@ namespace kjellmanautoapi.Models
         public string PlateNumber { get; set; } = "XXX111";
         public int Milage { get; set; } = 10000;
         public int Price { get; set; } = 10000;
+        public string Description { get; set; } = "";
         public string ImageName { get; set; } = "";
 
         [NotMapped]
         public IFormFile? ImageFile { get; set; }
+
+        [NotMapped]
+        public string ImageSrc { get; set; } = "";
     }
 }

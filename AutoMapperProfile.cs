@@ -1,3 +1,5 @@
+using kjellmanautoapi.Migrations;
+
 namespace kjellmanautoapi
 {
     public class AutoMapperProfile : Profile
@@ -6,6 +8,8 @@ namespace kjellmanautoapi
         {
             CreateMap<Inventory, GetInventoryDto>();
             CreateMap<AddInventoryDto, Inventory>();
+            CreateMap<Users, UserLoginDto>();
+            CreateMap<UserLoginDto, Users>();
         }
     }
 }

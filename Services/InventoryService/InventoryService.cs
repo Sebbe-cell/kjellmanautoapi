@@ -74,16 +74,38 @@ namespace kjellmanautoapi.Services.InventoryService
             var serviceResponse = new ServiceResponse<List<GetInventoryDto>>();
             var dbInventory = await _context.Inventories.ToListAsync();
 
-            serviceResponse.Data = dbInventory.Select(i => _mapper.Map<GetInventoryDto>(i)).ToList();
+            serviceResponse.Data = dbInventory.Select(i =>
+            {
+                var inventoryDto = _mapper.Map<GetInventoryDto>(i);
+                inventoryDto.ImageSrc = GetImageSrc(i.ImageName); // Set the ImageSrc property
+                return inventoryDto;
+            }).ToList();
 
             return serviceResponse;
+        }
+
+        private string GetImageSrc(string imageName)
+        {
+            var baseUrl = "https://localhost:7114/Images/";
+            var imageUrl = baseUrl + imageName;
+            return imageUrl;
         }
 
         public async Task<ServiceResponse<GetInventoryDto>> GetInventoryById(int id)
         {
             var serviceResponse = new ServiceResponse<GetInventoryDto>();
             var dbInventory = await _context.Inventories.FirstOrDefaultAsync(i => i.Id == id);
-            serviceResponse.Data = _mapper.Map<GetInventoryDto>(dbInventory);
+
+            if (dbInventory == null)
+            {
+                serviceResponse.Message = "Inventory not found.";
+                return serviceResponse;
+            }
+
+            var inventoryDto = _mapper.Map<GetInventoryDto>(dbInventory);
+            inventoryDto.ImageSrc = GetImageSrc(dbInventory.ImageName); // Set the ImageSrc property
+            serviceResponse.Data = inventoryDto;
+
             return serviceResponse;
         }
 
