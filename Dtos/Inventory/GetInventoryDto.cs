@@ -12,9 +12,7 @@ namespace kjellmanautoapi.Dtos.Inventory
         public int Milage { get; set; } = 10000;
         public int Price { get; set; } = 10000;
         public string Description { get; set; } = "";
-
-        [NotMapped]
-        public IFormFile? ImageFile { get; set; }
+        public List<GetEquipmentsDto> Equipment { get; set; }
 
         [NotMapped]
         public string ImageSrc { get; set; } = "";

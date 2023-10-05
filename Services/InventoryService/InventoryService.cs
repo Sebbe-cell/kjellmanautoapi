@@ -10,23 +10,26 @@ namespace kjellmanautoapi.Services.InventoryService
             _mapper = mapper;
             _context = context;
         }
-
-        public async Task<ServiceResponse<List<GetInventoryDto>>> AddInventory(AddInventoryDto newInventory)
+        
+        public async Task<ServiceResponse<GetInventoryDto>> AddInventory(AddInventoryDto newInventory)
         {
-            var serviceResponse = new ServiceResponse<List<GetInventoryDto>>();
+            var serviceResponse = new ServiceResponse<GetInventoryDto>(); // Change the response type to GetInventoryDto
             try
             {
                 var inventory = _mapper.Map<Inventory>(newInventory);
 
+                var selectedEquipment = _context.Equipments.Where(e => newInventory.EquipmentIds.Contains(e.Id)).ToList();
+
+                // Associate the selected equipment with the inventory
+                inventory.Equipment = selectedEquipment;
                 // Add the new inventory to the context
                 _context.Inventories.Add(inventory);
 
                 // Save changes to the database
                 await _context.SaveChangesAsync();
 
-                // Retrieve and map all inventories from the context
-                var dbInventories = await _context.Inventories.ToListAsync();
-                serviceResponse.Data = dbInventories.Select(i => _mapper.Map<GetInventoryDto>(i)).ToList();
+                // Map and return the newly created inventory
+                serviceResponse.Data = _mapper.Map<GetInventoryDto>(inventory);
             }
             catch (Exception ex)
             {
@@ -72,12 +75,14 @@ namespace kjellmanautoapi.Services.InventoryService
         public async Task<ServiceResponse<List<GetInventoryDto>>> GetAllInventories()
         {
             var serviceResponse = new ServiceResponse<List<GetInventoryDto>>();
-            var dbInventory = await _context.Inventories.ToListAsync();
+            var dbInventories = await _context.Inventories
+                .Include(i => i.Equipment) // Include the related equipment
+                .ToListAsync();
 
-            serviceResponse.Data = dbInventory.Select(i =>
+            serviceResponse.Data = dbInventories.Select(i =>
             {
                 var inventoryDto = _mapper.Map<GetInventoryDto>(i);
-                inventoryDto.ImageSrc = GetImageSrc(i.ImageName); // Set the ImageSrc property
+                inventoryDto.ImageSrc = GetImageSrc(i.ImageName);
                 return inventoryDto;
             }).ToList();
 
@@ -94,7 +99,9 @@ namespace kjellmanautoapi.Services.InventoryService
         public async Task<ServiceResponse<GetInventoryDto>> GetInventoryById(int id)
         {
             var serviceResponse = new ServiceResponse<GetInventoryDto>();
-            var dbInventory = await _context.Inventories.FirstOrDefaultAsync(i => i.Id == id);
+            var dbInventory = await _context.Inventories
+            .Include(i => i.Equipment)
+            .FirstOrDefaultAsync(i => i.Id == id);
 
             if (dbInventory == null)
             {

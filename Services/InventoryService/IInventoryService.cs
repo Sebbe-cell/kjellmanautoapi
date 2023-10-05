@@ -4,7 +4,7 @@ namespace kjellmanautoapi.Services.InventoryService
     {
         Task<ServiceResponse<List<GetInventoryDto>>> GetAllInventories();
         Task<ServiceResponse<GetInventoryDto>> GetInventoryById(int id);
-        Task<ServiceResponse<List<GetInventoryDto>>> AddInventory(AddInventoryDto newInventory);
+        Task<ServiceResponse<GetInventoryDto>> AddInventory(AddInventoryDto newInventory);
         Task<ServiceResponse<GetInventoryDto>> UpdateInventory(UpdateInventoryDto updatedInventory);
         Task<ServiceResponse<List<GetInventoryDto>>> DeleteInventory(int id);
     }

@@ -21,6 +21,38 @@ namespace kjellmanautoapi.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("EquipmentsInventory", b =>
+                {
+                    b.Property<int>("EquipmentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("InventoriesId")
+                        .HasColumnType("int");
+
+                    b.HasKey("EquipmentId", "InventoriesId");
+
+                    b.HasIndex("InventoriesId");
+
+                    b.ToTable("EquipmentsInventory");
+                });
+
+            modelBuilder.Entity("kjellmanautoapi.Models.Equipments", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Equipments");
+                });
+
             modelBuilder.Entity("kjellmanautoapi.Models.Inventory", b =>
                 {
                     b.Property<int>("Id")
@@ -83,6 +115,21 @@ namespace kjellmanautoapi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("EquipmentsInventory", b =>
+                {
+                    b.HasOne("kjellmanautoapi.Models.Equipments", null)
+                        .WithMany()
+                        .HasForeignKey("EquipmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("kjellmanautoapi.Models.Inventory", null)
+                        .WithMany()
+                        .HasForeignKey("InventoriesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

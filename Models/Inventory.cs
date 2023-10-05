@@ -13,6 +13,7 @@ namespace kjellmanautoapi.Models
         public int Price { get; set; } = 10000;
         public string Description { get; set; } = "";
         public string ImageName { get; set; } = "";
+        public List<Equipments> Equipment { get; set; }
 
         [NotMapped]
         public IFormFile? ImageFile { get; set; }

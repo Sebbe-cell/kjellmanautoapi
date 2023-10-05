@@ -29,8 +29,8 @@ namespace kjellmanautoapi.Controllers
             return Ok(await _inventoryService.GetInventoryById(id));
         }
 
-        [HttpPost]
-        public async Task<ActionResult<ServiceResponse<List<GetInventoryDto>>>> AddInventory([FromForm] AddInventoryDto newInventory)
+        [HttpPost, AllowAnonymous]
+        public async Task<ActionResult<GetInventoryDto>> AddInventory([FromForm] AddInventoryDto newInventory)
         {
             if (newInventory == null || newInventory.ImageFile == null)
             {
@@ -38,14 +38,23 @@ namespace kjellmanautoapi.Controllers
             }
 
             newInventory.ImageName = await SaveImage(newInventory.ImageFile);
-            return Ok(await _inventoryService.AddInventory(newInventory));
+            var serviceResponse = await _inventoryService.AddInventory(newInventory);
+
+            if (serviceResponse.Success)
+            {
+                return Ok(serviceResponse.Data); // Return the newly created object in the response
+            }
+            else
+            {
+                return BadRequest(serviceResponse.Message); // Return a 400 Bad Request with an error message if there was an error
+            }
         }
 
         [NonAction]
         public async Task<string> SaveImage(IFormFile imageFile)
         {
             string imageName = new string(Path.GetFileNameWithoutExtension(imageFile.FileName).Take(10).ToArray()).Replace(' ', '-');
-            imageName = imageName + DateTime.Now.ToString("yymmssfff") + Path.GetExtension(imageFile.FileName);
+            imageName = imageName + Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
             var imagePath = Path.Combine(_hostEnvironment.ContentRootPath, "Images", imageName);
 
             using (var fileStream = new FileStream(imagePath, FileMode.Create))

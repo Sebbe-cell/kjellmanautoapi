@@ -11,5 +11,6 @@ namespace kjellmanautoapi.Dtos.Inventory
         public string ImageName { get; set; } = "";
         public string Description { get; set; } = "";
         public IFormFile? ImageFile { get; set; }
+        public List<int> EquipmentIds { get; set; }
     }
 }
