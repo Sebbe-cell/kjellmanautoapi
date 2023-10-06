@@ -10,7 +10,7 @@ namespace kjellmanautoapi.Services.InventoryService
             _mapper = mapper;
             _context = context;
         }
-        
+
         public async Task<ServiceResponse<GetInventoryDto>> AddInventory(AddInventoryDto newInventory)
         {
             var serviceResponse = new ServiceResponse<GetInventoryDto>(); // Change the response type to GetInventoryDto
@@ -76,13 +76,21 @@ namespace kjellmanautoapi.Services.InventoryService
         {
             var serviceResponse = new ServiceResponse<List<GetInventoryDto>>();
             var dbInventories = await _context.Inventories
-                .Include(i => i.Equipment) // Include the related equipment
+                .Include(i => i.Equipment)
+                .Include(i => i.Images)
                 .ToListAsync();
 
             serviceResponse.Data = dbInventories.Select(i =>
             {
                 var inventoryDto = _mapper.Map<GetInventoryDto>(i);
-                inventoryDto.ImageSrc = GetImageSrc(i.ImageName);
+
+                // Create a list of GetImagesDto from the Images navigation property
+                inventoryDto.Images = i.Images.Select(img => new GetImagesDto
+                {
+                    Id = img.Id,
+                    FileName = GetImageSrc(img.FileName) // Set FileName using GetImageSrc method
+                }).ToList();
+
                 return inventoryDto;
             }).ToList();
 
@@ -99,9 +107,11 @@ namespace kjellmanautoapi.Services.InventoryService
         public async Task<ServiceResponse<GetInventoryDto>> GetInventoryById(int id)
         {
             var serviceResponse = new ServiceResponse<GetInventoryDto>();
+
             var dbInventory = await _context.Inventories
-            .Include(i => i.Equipment)
-            .FirstOrDefaultAsync(i => i.Id == id);
+                .Include(i => i.Equipment)
+                .Include(i => i.Images)
+                .FirstOrDefaultAsync(i => i.Id == id);
 
             if (dbInventory == null)
             {
@@ -109,12 +119,18 @@ namespace kjellmanautoapi.Services.InventoryService
                 return serviceResponse;
             }
 
+            // Modify the image filenames in the desired format
+            foreach (var image in dbInventory.Images)
+            {
+                image.FileName = GetImageSrc(image.FileName);
+            }
+
             var inventoryDto = _mapper.Map<GetInventoryDto>(dbInventory);
-            inventoryDto.ImageSrc = GetImageSrc(dbInventory.ImageName); // Set the ImageSrc property
             serviceResponse.Data = inventoryDto;
 
             return serviceResponse;
         }
+
 
         public async Task<ServiceResponse<GetInventoryDto>> UpdateInventory(UpdateInventoryDto updatedInventory)
         {
@@ -123,11 +139,13 @@ namespace kjellmanautoapi.Services.InventoryService
             try
             {
                 var inventory = await _context.Inventories.FirstOrDefaultAsync(i => i.Id == updatedInventory.Id);
+                
                 if (inventory is null)
                 {
                     throw new Exception($"Inventory with Id '{updatedInventory.Id}' not found");
                 }
 
+                inventory.Header = updatedInventory.Header;
                 inventory.Model = updatedInventory.Model;
                 inventory.Make = updatedInventory.Make;
                 inventory.Milage = updatedInventory.Milage;

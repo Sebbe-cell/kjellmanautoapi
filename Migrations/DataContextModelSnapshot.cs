@@ -53,6 +53,28 @@ namespace kjellmanautoapi.Migrations
                     b.ToTable("Equipments");
                 });
 
+            modelBuilder.Entity("kjellmanautoapi.Models.Images", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("InventoryId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InventoryId");
+
+                    b.ToTable("Images");
+                });
+
             modelBuilder.Entity("kjellmanautoapi.Models.Inventory", b =>
                 {
                     b.Property<int>("Id")
@@ -69,7 +91,7 @@ namespace kjellmanautoapi.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ImageName")
+                    b.Property<string>("Header")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -130,6 +152,22 @@ namespace kjellmanautoapi.Migrations
                         .HasForeignKey("InventoriesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("kjellmanautoapi.Models.Images", b =>
+                {
+                    b.HasOne("kjellmanautoapi.Models.Inventory", "Inventory")
+                        .WithMany("Images")
+                        .HasForeignKey("InventoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Inventory");
+                });
+
+            modelBuilder.Entity("kjellmanautoapi.Models.Inventory", b =>
+                {
+                    b.Navigation("Images");
                 });
 #pragma warning restore 612, 618
         }

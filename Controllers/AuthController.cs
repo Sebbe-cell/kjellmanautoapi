@@ -16,7 +16,7 @@ namespace kjellmanautoapi.Controllers
             _authService = authService;
         }
 
-        [HttpPost("register"), AllowAnonymous]
+        [HttpPost("register")]
         public async Task<ActionResult<ServiceResponse<UserLoginDto>>> Register(UserLoginDto newUser)
         {
             var response = await _authService.Register(newUser);

@@ -10,11 +10,13 @@ namespace kjellmanautoapi.Controllers
     {
         private readonly IInventoryService _inventoryService;
         private readonly IWebHostEnvironment _hostEnvironment;
+        private readonly DataContext _context;
 
-        public InventoryController(IInventoryService inventoryService, IWebHostEnvironment hostEnvironment)
+        public InventoryController(IInventoryService inventoryService, IWebHostEnvironment hostEnvironment, DataContext context)
         {
             _inventoryService = inventoryService;
             _hostEnvironment = hostEnvironment;
+            _context = context;
         }
 
         [HttpGet("GetAll"), AllowAnonymous]
@@ -29,24 +31,71 @@ namespace kjellmanautoapi.Controllers
             return Ok(await _inventoryService.GetInventoryById(id));
         }
 
-        [HttpPost, AllowAnonymous]
+        [HttpPost]
         public async Task<ActionResult<GetInventoryDto>> AddInventory([FromForm] AddInventoryDto newInventory)
         {
-            if (newInventory == null || newInventory.ImageFile == null)
+            try
             {
-                return BadRequest("Invalid input"); // Return a 400 Bad Request with an error message for invalid input
-            }
+                var inventory = new Inventory
+                {
+                    Make = newInventory.Make,
+                    Model = newInventory.Model,
+                    Color = newInventory.Color,
+                    Milage = newInventory.Milage,
+                    Price = newInventory.Price,
+                    PlateNumber = newInventory.PlateNumber,
+                    Description = newInventory.Description,
+                };
 
-            newInventory.ImageName = await SaveImage(newInventory.ImageFile);
-            var serviceResponse = await _inventoryService.AddInventory(newInventory);
+                // Add the equipment associations
+                if (newInventory.EquipmentIds != null && newInventory.EquipmentIds.Count > 0)
+                {
+                    var selectedEquipment = _context.Equipments.Where(e => newInventory.EquipmentIds.Contains(e.Id)).ToList();
+                    inventory.Equipment = selectedEquipment;
+                }
 
-            if (serviceResponse.Success)
-            {
-                return Ok(serviceResponse.Data); // Return the newly created object in the response
+                // Add the inventory to the context and save changes to generate the InventoryId
+                _context.Inventories.Add(inventory);
+                await _context.SaveChangesAsync();
+
+                if (newInventory.Images != null && newInventory.Images.Count > 0)
+                {
+                    foreach (var formFile in newInventory.Images)
+                    {
+                        if (formFile.Length > 0)
+                        {
+                            // Generate a unique GUID for the image filename
+                            var imageGuid = Guid.NewGuid();
+
+                            // Construct the image filename with the GUID and extension
+                            var imageName = imageGuid.ToString() + Path.GetExtension(formFile.FileName);
+                            var imagePath = Path.Combine(_hostEnvironment.ContentRootPath, "Images", imageName);
+
+                            using (var stream = new FileStream(imagePath, FileMode.Create))
+                            {
+                                await formFile.CopyToAsync(stream);
+                            }
+
+                            var image = new Images
+                            {
+                                FileName = imageName, // Use the filename with the GUID
+                                InventoryId = inventory.Id
+                            };
+
+                            // Add the image to the context
+                            _context.Images.Add(image);
+                        }
+                    }
+
+                    // Save changes again after adding images
+                    await _context.SaveChangesAsync();
+                }
+
+                return Ok("Inventory and images added successfully.");
             }
-            else
+            catch (Exception ex)
             {
-                return BadRequest(serviceResponse.Message); // Return a 400 Bad Request with an error message if there was an error
+                return BadRequest($"Error: {ex.Message}\nInner Exception: {ex.InnerException?.Message}");
             }
         }
 

@@ -8,6 +8,7 @@ global using Microsoft.EntityFrameworkCore;
 global using kjellmanautoapi.Data;
 global using kjellmanautoapi.Services.AuthService;
 global using kjellmanautoapi.Dtos.Equipment;
+global using kjellmanautoapi.Dtos.Image;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
