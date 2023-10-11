@@ -14,14 +14,19 @@ namespace kjellmanautoapi
                 {
                     Id = e.Id,
                     Name = e.Name
+                })))
+                .ForMember(dest => dest.Facts, opt => opt.MapFrom(src => src.Facts.Select(e => new GetFactsDto
+                {
+                    Id = e.Id,
+                    DisplayName = e.DisplayName
                 })));
 
             CreateMap<AddInventoryDto, Inventory>()
                 .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.Images));
-
             CreateMap<Users, UserLoginDto>();
             CreateMap<UserLoginDto, Users>();
             CreateMap<Equipments, GetEquipmentsDto>();
+            CreateMap<Facts, GetFactsDto>();
             CreateMap<Images, GetImagesDto>();
         }
     }

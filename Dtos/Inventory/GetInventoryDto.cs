@@ -13,7 +13,11 @@ namespace kjellmanautoapi.Dtos.Inventory
         public int Milage { get; set; } = 0;
         public int Price { get; set; } = 0;
         public string Description { get; set; } = "";
+        public int ModelYear { get; set; } = 0;
+        public string GearBox { get; set; } = "";
+        public string Propellent { get; set; } = "";
         public List<GetEquipmentsDto> Equipment { get; set; }
+        public List<GetFactsDto> Facts { get; set; }
         public List<GetImagesDto> Images { get; set; }
     }
 }

@@ -11,6 +11,7 @@ namespace kjellmanautoapi.Data
         public DbSet<Users> Users => Set<Users>();
         public DbSet<Equipments> Equipments => Set<Equipments>();
         public DbSet<Images> Images => Set<Images>();
+        public DbSet<Facts> Facts => Set<Facts>();
 
     }
 }

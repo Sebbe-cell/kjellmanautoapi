@@ -6,17 +6,17 @@ namespace kjellmanautoapi.Controllers
 {
     [Route("api/[controller]")]
     [Authorize]
-    public class EquipmentController : Controller
+    public class FactsController : Controller
     {
         private readonly IEquipmentService _equipmentService;
 
-        public EquipmentController(IEquipmentService equipmentService)
+        public FactsController(IEquipmentService equipmentService)
         {
             _equipmentService = equipmentService;
         }
 
         [HttpGet("GetAll")]
-        public async Task<ActionResult<ServiceResponse<List<GetEquipmentsDto>>>> Get()
+        public async Task<ActionResult<ServiceResponse<List<GetFactsDto>>>> Get()
         {
             return Ok(await _equipmentService.GetAllEquipments());
         }

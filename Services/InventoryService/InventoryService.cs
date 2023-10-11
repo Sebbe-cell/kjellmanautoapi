@@ -19,9 +19,11 @@ namespace kjellmanautoapi.Services.InventoryService
                 var inventory = _mapper.Map<Inventory>(newInventory);
 
                 var selectedEquipment = _context.Equipments.Where(e => newInventory.EquipmentIds.Contains(e.Id)).ToList();
+                var selectedFacts = _context.Facts.Where(e => newInventory.FactIds.Contains(e.Id)).ToList();
 
                 // Associate the selected equipment with the inventory
                 inventory.Equipment = selectedEquipment;
+                inventory.Facts = selectedFacts;
                 // Add the new inventory to the context
                 _context.Inventories.Add(inventory);
 
@@ -77,6 +79,7 @@ namespace kjellmanautoapi.Services.InventoryService
             var serviceResponse = new ServiceResponse<List<GetInventoryDto>>();
             var dbInventories = await _context.Inventories
                 .Include(i => i.Equipment)
+                .Include(f => f.Facts)
                 .Include(i => i.Images)
                 .ToListAsync();
 
@@ -110,6 +113,7 @@ namespace kjellmanautoapi.Services.InventoryService
 
             var dbInventory = await _context.Inventories
                 .Include(i => i.Equipment)
+                .Include(f => f.Facts)
                 .Include(i => i.Images)
                 .FirstOrDefaultAsync(i => i.Id == id);
 
@@ -139,7 +143,7 @@ namespace kjellmanautoapi.Services.InventoryService
             try
             {
                 var inventory = await _context.Inventories.FirstOrDefaultAsync(i => i.Id == updatedInventory.Id);
-                
+
                 if (inventory is null)
                 {
                     throw new Exception($"Inventory with Id '{updatedInventory.Id}' not found");

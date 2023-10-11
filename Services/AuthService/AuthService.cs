@@ -89,7 +89,8 @@ namespace kjellmanautoapi.Services.AuthService
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, user.UserName)
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim("key", _configuration.GetSection("Appsettings:Token").Value ?? "")
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
